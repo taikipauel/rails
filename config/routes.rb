@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'sessions/new'
   get 'users/new'
   root 'static_pages#home'
   get '/help', to: 'static_pages#help', as: 'help'
@@ -6,7 +7,11 @@ Rails.application.routes.draw do
   get '/about', to: 'static_pages#about'
   get '/contact', to: 'static_pages#contact'
   get '/signup', to: 'users#new'
-  post '/signup', to: 'users#create' #restfulルーティングの名前を変更！
+  post '/signup', to: 'users#create'
+  get '/login', to: 'sessions#new'
+  post '/login', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
+ #restfulルーティングの名前を変更！
   #リソースを扱うページでないので、上記は、リソースベースのルーティングをしていない
 
   resources :users #左で、railsのrest機能がusersリソースに対して有効となる

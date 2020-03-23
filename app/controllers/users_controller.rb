@@ -1,6 +1,17 @@
 class UsersController < ApplicationController
+  protect_from_forgery except: :destroy
+  #onlyオプションで制限するアクションを指定
+  before_action :logged_in_user, only: [:indes, :edit, :update]
+  before_action :correct_user, only: [:edit, :update]
+  before_action :admin_user, only: :destroy
+
   def new
     @user = User.new
+  end
+
+  def index
+    #ページネーション用のgemによるメソッドを利用
+    @users = User.paginate(page: params[:page]) 
   end
 
   def show
@@ -18,13 +29,54 @@ class UsersController < ApplicationController
     end
   end
 
+  def edit
+  end
 
+  def update
+    if @user.update_attributes(user_params) #ここでも、ストロングパラメーターであるuse_paramsで、マスアサインメント対策！
+      flash[:success] = "Profile updated"
+      redirect_to @user
+    else
+      render 'edit'
+    end
+  end
+
+  def destroy
+    User.find(params[:id]).destroy
+    flash[:success] = "User deleted"
+    redirect_to users_url
+  end
 
   private
 
     def user_params
       params.require(:user).permit(:name, :email, :password,
                                    :password_confirmation)
+    end
+
+    #beforeアクション
+    #ログイン済みユーザーかどうか確認
+    def logged_in_user
+      unless logged_in?
+        store_location
+        flash[:danger] = "Please log in"
+        redirect_to login_url
+      end
+    end
+
+    #正しいユーザーかどうか確認
+    def correct_user
+      @user = User.find(params[:id])
+      unless current_user?(@user)
+        flash[:danger] = "You aren't allowed to edit this page."
+        redirect_to(root_url)
+      # redirect_to(root_url) unless current_user?(@user)
+      end
+    end
+
+    #管理者かどうか確認
+    def admin_user
+      redirect_to(root_url) unless current_user.admin?
     end
 
 end

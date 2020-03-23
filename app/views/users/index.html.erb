@@ -1,0 +1,16 @@
+<% provide(:title, "All users") %>
+<h1>All Users</h1>
+
+<%= will_paginate %>
+
+<ul class="users">
+<!--改良例１
+  <% @users.each do |user| %>
+    <%= render @users %> <!-- renderをパーシャルではなく、Userクラスのuser変数に使用 →Railsは自動的に_user.html.erbというパーシャルを探しに行く。
+  <% end %>
+-->
+<!-- 改良例２-->
+  <%= render @users %><!-- Railsは@usersをUserオブジェクトのリストと推測し、自動的にユーザーをコレクションし、_user.html.erbパーシャルで出力-->
+</ul>
+
+<%= will_paginate %>

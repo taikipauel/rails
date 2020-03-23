@@ -11,6 +11,10 @@ module SessionsHelper
     cookies.permanent[:remember_token] = user.remember_token
   end
 
+  def current_user?(user)
+    user == current_user
+  end
+
   def forget(user)
     user.forget #これは、モデルのインスタンスuserに定義されたメソッド
     cookies.delete(:user_id)
@@ -40,6 +44,18 @@ module SessionsHelper
     forget(current_user) #current_userメソッドは、現在のユーザーを返すメソッド
     session.delete(:user_id)
     @current_user = nil
+  end
+
+  #記憶したURL（もしくはデフォルト値）にリダイレクト
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url] || default)
+    session.delete(:forwarding_url) #転送用のURLを消去
+  end
+
+  #アクセスしようとしたURLを覚えておく
+  def store_location
+    #GETメソッドが送られた時だけ格納するように.get?を使ってる
+    session[:forwarding_url] = request.original_url if request.get?
   end
 
 end

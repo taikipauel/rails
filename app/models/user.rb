@@ -8,7 +8,8 @@ class User < ApplicationRecord
                     uniqueness: { case_sensitive: false }
                 
   has_secure_password
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  #has_secure_passwordｄ、存在性が検証されるので、からのパスワードが新規ユーザ登録時に有効になることはない
 
   def User.digest(string)
     cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
